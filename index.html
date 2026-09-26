@@ -595,8 +595,9 @@ body{background:transparent}
 <canvas id="fireflies" aria-hidden="true"></canvas>
 
 <!-- ===== FOREST AMBIENCE ===== -->
-<button id="music" aria-label="Toggle forest sounds" title="Play / pause forest sounds"><span class="eq"><span class="eqb"></span><span class="eqb"></span><span class="eqb"></span></span></button>
-<audio id="audio" loop preload="auto"><source src="assets/forest.mp3" type="audio/mpeg" /></audio>
+<button id="music" aria-label="Toggle background audio" title="Play / pause background audio"><span class="eq"><span class="eqb"></span><span class="eqb"></span><span class="eqb"></span></span></button>
+<audio id="audio" loop preload="auto"><source src="assets/clips.mp3" type="audio/mpeg" /></audio>
+<audio id="forestAmb" loop preload="auto"><source src="assets/forest.mp3" type="audio/mpeg" /></audio>
 
 <script>
 /* RSVP endpoint: paste your Google Apps Script Web App URL here to collect responses in a Google Sheet */
@@ -608,7 +609,7 @@ const music=document.getElementById('music'), audio=document.getElementById('aud
 let opened=false;
 function beginInvite(){
   if(opened) return; opened=true;
-  audio.volume=.55; startSound(); unlockOwlCall();
+  audio.volume=1; forestAmb.volume=.22; startSound(); unlockOwlCall();
   cover.classList.add('hide'); reveal.classList.add('on');
   setTimeout(()=>cover.style.display='none',1100);
   setTimeout(()=>reveal.classList.add('fade'),3400);
@@ -619,12 +620,13 @@ cover.addEventListener('click',e=>{ if(e.target===cover) beginInvite(); });
 document.body.style.overflow='hidden';
 
 /* music toggle */
-music.addEventListener('click',()=>{ if(audio.paused){ startSound(); hoot(); } else { audio.pause(); soundOn=false; music.classList.remove('playing'); } });
+music.addEventListener('click',()=>{ if(audio.paused){ startSound(); hoot(); } else { audio.pause(); forestAmb.pause(); soundOn=false; music.classList.remove('playing'); } });
 
 /* ===== forest ambience + spotted owlet ===== */
 const owlCall=new Audio('assets/owlet.mp3'); owlCall.preload='auto'; owlCall.volume=.85;
 let soundOn=false;
-function startSound(){ audio.play().then(()=>{ soundOn=true; music.classList.add('playing'); }).catch(()=>{}); }
+const forestAmb=document.getElementById('forestAmb');
+function startSound(){ forestAmb.play().catch(()=>{}); audio.play().then(()=>{ soundOn=true; music.classList.add('playing'); }).catch(()=>{}); }
 function unlockOwlCall(){ /* iOS: prime the owlet clip inside the tap gesture */
   try{ owlCall.muted=true; owlCall.play().then(()=>{ owlCall.pause(); owlCall.currentTime=0; owlCall.muted=false; }).catch(()=>{ owlCall.muted=false; }); }catch(_){}
 }
